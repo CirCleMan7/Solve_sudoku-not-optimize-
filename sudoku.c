@@ -2,6 +2,8 @@
 
 void displaySolution(int solution[9][9]);
 int checkFixedNumInQuestion(int solution[9][9], int question[9][9], int i, int j);
+void displayRow(int solution[9][9]);
+void setQuestion(int solution[9][9], int question[9][9]);
 
 int checkSameInBox(int box[9])
 {
@@ -23,45 +25,65 @@ int checkSameInBox(int box[9])
     return (0);
 }
 
-int checkSameNum(int solution[9][9], int i, int j)
+int checkRow(int solution[9][9], int i, int j)
 {
-    int checkRow = 0;
-    int checkCollum = 0;
-    int checkTopLeft = 0;
-    int checkBottomRight = 0;
-    int checkExtraCase = 0;
-    int checkSameBox = 0;
-    int box[10];
+    int y = i;
     int x = 0;
-    int y = 0;
+    int checkRowNum = 0;
 
     for (y = i, x = 0; x < 9; x++)
     {
         if (solution[y][x] == solution[i][j])
         {
-            checkRow++;
+            checkRowNum++;
+            if (checkRowNum > 1)
+                return (1);
         }
     }
-    
+    return (0);
+}
+
+int checkCollum(int solution[9][9], int i, int j)
+{
+    int y = 0;
+    int x = j;
+    int checkCollumNum = 0;
+
     for (y = 0, x = j; y < 9; y++)
     {
         if (solution[y][x] == solution[i][j])
         {
-            checkCollum++;
+            checkCollumNum++;
+            if (checkCollumNum > 1)
+                return (1);
         }
     }
+    return (0);
+}
 
+int checkSameNum(int solution[9][9], int i, int j)
+{
+    int checkSameBox = 0;
+    int box[10];
+    int x = 0;
+    int y = 0;
+    int amountRow = (i + 1) % 3;
+    int amountCollum = (j + 1) % 3;
+    int a = 0;
+
+    if (checkCollum(solution, i, j) == 1)
+        return (1);
+
+    if (checkRow(solution, i, j) == 1)
+        return (1);
+    
 
     y = i;
     x = j;
-    int amountRow = (i + 1) % 3;
     if (amountRow == 0)
         amountRow = 3;
-    int amountCollum = (j + 1) % 3;
     if (amountCollum == 0)
         amountCollum = 3;
-    x = j;
-    int a = 0;
     for (y = i; amountRow > 0 && y >= 0; y--, amountRow--)
     {
         for (; amountCollum > 0 && x >= 0; x--, amountCollum--)
@@ -77,7 +99,6 @@ int checkSameNum(int solution[9][9], int i, int j)
         }
     }
     box[a] = 0;
-
     checkSameBox = checkSameInBox(box);
 
 
@@ -94,8 +115,6 @@ int checkSameNum(int solution[9][9], int i, int j)
     //         }
     //     }
     // }
-    y = i;
-    x = j;
     // int checkSameBox = 1;
     // if (((y + 1) % 3 == 0 && (x + 1) % 3 == 0) && ((x + 1) != 0))
     // {
@@ -144,7 +163,7 @@ int checkSameNum(int solution[9][9], int i, int j)
 
     // for ()
     // printf("eiei\n");
-    if (checkCollum > 1 || checkRow > 1 || checkSameBox == 1)
+    if (checkSameBox == 1)
     {
         return (1);
     }
@@ -164,26 +183,111 @@ void displaySolution(int solution[9][9])
     }
 }
 
-void random(int solution[9][9], int question[9][9])
+void findFirstNum(int solution[9][9], int question[9][9], int *firstI, int *firstJ)
 {
-    int randomNum = 1;
-    int count = 0;
-    int backward = 0;
     for (int i = 0; i < 9; i++)
     {
         for (int j = 0; j < 9; j++)
         {
+            if (question[i][j] == 0)
+            {
+                *firstI = i;
+                *firstJ = j;
+                // printf("firstI = %d | firstJ = %d\n", *firstI, *firstJ);
+                return ;
+            }
+        }
+    }
+}
+
+
+
+int setlimit(int firstI, int firstJ, int *count, int i, int j)
+{
+    // printf("count = %d\n", *count);
+    // printf("firstI = %d | firstJ = %d\n", firstI, firstJ);
+    if (*count > 500000000)
+    {
+        if (firstI == i && firstJ == j)
+        {
+            *count = 0;
+            return(0);
+        }
+        return (1);
+    }
+    return (0);
+}
+
+int checkfix(int solution[9][9], int question[9][9], int i, int j)
+{
+    if (question[i][j] != 0)
+    {
+        return (1);
+    }
+    return (0);
+}
+
+void random(int solution[9][9], int question[9][9])
+{
+    int randomNum = 1;
+    int count = 0;
+    int countShow = 0;
+    // int firstI = 0;
+    // int firstJ = 0;
+
+    // findFirstNum(solution, question, &firstI, &firstJ);
+    // int backward = 0;
+    for (int i = 0; i < 9; i++)
+    {
+        setQuestion(solution, question);
+        for (int j = 0; j < 9; j++, count++, countShow++)
+        {
+            // if (countShow / 1000000 == 1)
+            // {
+            //     displaySolution(solution);
+            //     printf("\n");
+            //     countShow = 0;
+            // }
             // if (backward == 1)
             //     randomNum = solution[i][j] + 1;
+            // while (checkfix(solution, question, i, j) == 0)
+            // {
+                // solution[i][j] = question[i][j];
+                // i++;
+            // }
+
+            // while (checkfix(solution, question, i, j) == 1)
+            // {
+            //     solution[i][j] = question[i][j];
+            //     j++;
+            //     printf("j = %d\n", j);
+            // }
+            // while (question[i][j] != 0)
+            // {
+            //     solution[i][j] = question[i][j];
+            //     j++;
+            //     if (i > 8)
+            //         break;
+            //     else if (j > 8)
+            //     {
+            //         j = 0;
+            //         i++;
+            //     }
+            // }
             solution[i][j] = randomNum;
             // printf("this i ; %d | this j : %d \n", i, j);
             // count = 0;
             // displaySolution(solution); 
+            // displaySolution(solution);
             if (checkSameNum(solution, i, j) == 1 || randomNum > 9 || checkFixedNumInQuestion(solution, question, i, j) == 1)
             {
+                // displaySolution(solution);
                 // printf("before j = %d\n", j);
                 if (randomNum > 9)
                 {
+                    // if (checkfix(solution, question, i, j) == 0)
+                        // solution[i][j] = question[i][j];
+                    // else
                     solution[i][j] = 0;
                     if (j == 0)
                     {
@@ -197,7 +301,7 @@ void random(int solution[9][9], int question[9][9])
                         randomNum = solution[i][j + 1];
                         // printf("eiei\n");
                     }
-                    count = 0;  
+                    // count = 0;  
                     // printf("i : %d | j : %d\n", i, j);
                     // printf("randomNumber = %d\n", randomNum);
                     // printf("\n");
@@ -210,12 +314,12 @@ void random(int solution[9][9], int question[9][9])
                     // printf("eiei\n");
                     // backward = 0;
                 }
-                count++;
+                // count++;
                 // randomNum = 0;
             }
             else
             {
-                count = 0;
+                // count = 0;
                 randomNum = 0;
             }
             randomNum++;
@@ -226,16 +330,34 @@ void random(int solution[9][9], int question[9][9])
 
         }
         // displaySolution(solution);
+        // printf("%d\n", solution[0][3]);
+        // displayRow(solution);
+        // printf("%d\n", solution[0][0]);
     }
 }
 
-void setInitial(int solution[9][9])
+void setInitial(int solution[9][9], int question[9][9])
 {
     for (int i = 0; i < 9; i++)
     {
         for (int j = 0; j < 9; j++)
         {
             solution[i][j] = 0;
+        }
+    }
+}
+
+void setQuestion(int solution[9][9], int question[9][9])
+{
+    for (int i = 0; i < 9; i++)
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            if (question[i][j] != 0)
+            {
+                solution[i][j] = question[i][j];
+                // printf("solution[%d][%d] = %d | question[%d][%d] = %d\n", i, j, solution[i][j], i, j, question[i][j]);
+            }
         }
     }
 }
@@ -361,6 +483,12 @@ void testMatrix(int question[9][9])
 
 }
 
+void displayRow(int solution[9][9])
+{
+    for (int i = 0; i < 9; i++)
+        printf("%d ", solution[0][i]);
+    printf("\n");
+}
 
 int checkFixedNumInQuestion(int solution[9][9], int question[9][9], int i, int j)
 {
@@ -379,37 +507,91 @@ int main()
 {
     int solution[9][9];
 
-    setInitial(solution);
+    int zero[9][9] =
+    {
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0 ,0, 0},
+        {0, 0, 0, 0, 0, 0, 0 ,0, 0},
+        {0, 0, 0, 0, 0, 0, 0 ,0, 0},
+        {0, 0, 0, 0, 0, 0, 0 ,0, 0},
+        {0, 0, 0, 0, 0, 0, 0 ,0, 0}
+    };
 
     int question[9][9] = {
-        {5, 0, 0, 2, 0, 0, 9, 8, 0},
-        {6, 4, 0, 0, 3, 8, 0, 5, 0},
-        {8, 0, 7, 9, 4, 0, 0, 0, 3},
-        {0, 5, 3, 0, 0, 2, 0, 0, 0},
-        {0, 0, 0, 0, 9, 0, 7 ,4, 0},
-        {4, 9, 0, 0, 5, 0, 0 ,0, 2},
-        {0, 0, 2, 5, 0, 0, 3 ,0, 0},
-        {0, 7, 0, 0, 0, 9, 5 ,6, 1},
-        {1, 0, 5, 3, 0, 7, 4 ,0, 9}
+        {0, 7, 0, 0, 4, 0, 0, 5, 0},
+        {0, 9, 0, 7, 6, 0, 0, 0, 1},
+        {0, 6, 0, 0, 0, 0, 0, 2, 0},
+        {5, 0, 0, 0, 7, 0, 0, 1, 0},
+        {0, 0, 0, 0, 0, 0, 0 ,0, 0},
+        {0, 4, 0, 0, 8, 0, 9 ,0, 0},
+        {0, 0, 0, 2, 0, 6, 0 ,0, 0},
+        {4, 0, 0, 0, 0, 8, 0 ,0, 2},
+        {3, 0, 0, 0, 1, 0, 0 ,8, 0}
     };
 
-    int questiontest[9][9] = {
-        {9, 1, 0, 6, 8, 0, 0, 0, 0},
-        {4, 0, 7, 0, 0, 0, 0, 6, 5},
-        {0, 8, 0, 2, 0, 0, 7, 0, 1},
-        {2, 0, 0, 0, 0, 1, 0, 7, 0},
-        {0, 0, 0, 0, 0, 0, 0 ,0, 8},
-        {0, 0, 0, 0, 4, 5, 0 ,2, 0},
-        {0, 0, 0, 0, 0, 9, 5 ,8, 0},
-        {0, 9, 0, 0, 6, 0, 0 ,3, 7},
-        {7, 6, 0, 0, 0, 0, 9 ,0, 2}
+    int questiontestMedium[9][9] = {
+        {5, 0, 1, 2, 0, 7, 0, 8, 0},
+        {6, 4, 0, 1, 0, 3, 2, 0, 0},
+        {0, 2, 7, 9, 5, 0, 6, 0, 3},
+        {7, 0, 0, 4, 0, 0, 0, 9, 6},
+        {0, 0, 6, 0, 0, 0, 8 ,0, 2},
+        {2, 0, 8, 0, 3, 9, 7 ,0, 0},
+        {0, 0, 0, 0, 4, 0, 3 ,0, 8},
+        {3, 7, 0, 8, 0, 0, 0 ,6, 1},
+        {1, 0, 0, 0, 0, 0, 4 ,0, 0}
     };
 
-    random(solution, questiontest);
+    int questiontestHard[9][9] = {
+        {3, 8, 2, 0, 6, 7, 0, 9, 1},
+        {0, 0, 0, 0, 1, 3, 2, 0, 0},
+        {0, 9, 6, 0, 4, 8, 3, 7, 5},
+        {9, 2, 0, 0, 0, 0, 6, 5, 0},
+        {0, 0, 0, 0, 0, 6, 0 ,4, 9},
+        {0, 0, 4, 3, 0, 0, 0 ,0, 0},
+        {0, 1, 9, 7, 0, 2, 0 ,0, 0},
+        {4, 3, 0, 6, 0, 0, 0 ,0, 7},
+        {0, 0, 0, 0, 0, 9, 5 ,0, 0}
+    };
+
+     int questiontestExpert[9][9] = {
+        {2, 0, 0, 0, 3, 0, 0, 0, 0},
+        {0, 0, 0, 1, 0, 0, 0, 0, 7},
+        {8, 0, 5, 0, 0, 4, 1, 0, 0},
+        {5, 0, 6, 0, 8, 0, 0, 0, 9},
+        {0, 7, 0, 0, 0, 6, 0, 0, 0},
+        {0, 2, 0, 0, 0, 0, 5, 0, 0},
+        {0, 0, 0, 0, 9, 0, 0, 3, 0},
+        {0, 6, 0, 0, 0, 0, 0, 0, 0},
+        {1, 0, 4, 0, 0, 8, 7, 0, 0}
+    };
+
+    int questiontestExtreme[9][9] = {
+        {1, 0, 3, 0, 0, 4, 0, 8, 7},
+        {0, 0, 0, 9, 0, 0, 0, 6, 0},
+        {0, 8, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 2, 0, 0, 0, 0, 0, 0},
+        {5, 0, 7, 0, 0, 3, 0 ,0, 1},
+        {0, 0, 0, 0, 4, 0, 3 ,0, 0},
+        {0, 4, 0, 0, 0, 0, 0 ,0, 8},
+        {8, 0, 5, 0, 6, 0, 0 ,7, 0},
+        {0, 2, 0, 0, 0, 5, 0 ,0, 0}
+    };
+
+    setInitial(solution, questiontestExtreme);
+    displaySolution(solution);
+    random(solution, questiontestExtreme);
+    printf("\n");
     printf("\n");
     displaySolution(solution);
     // testMatrix(question);
+    // int firstI = 0;
+    // int firstJ = 0;
+    // findFirstNum(solution, question, &firstI, &firstJ);
     
     return 0;
     // printf("question = %d\n", question[3][0]);
+    // 3 4 5 2 6 9 7 8 1
 }
